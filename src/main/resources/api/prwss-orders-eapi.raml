@@ -1,0 +1,52 @@
+#%RAML 1.0
+title: prwss-orders-eapi
+description: Creating the New delivery orders and register the new customers
+version: v1
+protocols: [HTTP,HTTPS]
+
+resourceTypes:
+  healthCheck: !include exchange_modules/781344dd-5c35-44e2-a7d5-54084ffee180/health-check/1.0.0/health-check.raml
+securitySchemes:
+  security: !include exchange_modules/781344dd-5c35-44e2-a7d5-54084ffee180/prws-common-traits/1.0.0/schemes/client-id-security-scheme.raml
+traits:
+  response: !include Traits/errorResponse.raml
+  correlation-id: !include exchange_modules/781344dd-5c35-44e2-a7d5-54084ffee180/prws-common-traits/1.0.0/traits/transaction-id.raml
+
+/health:
+  type: healthCheck
+
+/customerRegistration:
+  displayName: customer registration
+  description: register the new customers to place new orders and also checks customer already registered or not
+  is:
+    - response
+    - correlation-id
+  securedBy: [security]
+  post:
+    body:
+      application/json:
+        example: !include examples/customerExp.json
+        type: !include dataTypes/customerdDataType.raml
+    responses:
+      200:
+        body:
+          application/json:
+            example:
+              message: !include examples/succCustomerExp.json
+/placingOrder:
+  displayName: placing the orders
+  description: customer placing the orders different items
+  is:
+    - response
+    - correlation-id
+  securedBy: [security]
+  post:
+    body:
+      application/json:
+        example: !include examples/orderExp.json
+        type: !include dataTypes/orderdDataType.raml
+    responses:
+      200:
+        body:
+          application/json:
+            example: !include examples/succOrderExp.json

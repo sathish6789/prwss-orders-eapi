@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<flow name="customerRegistration" doc:id="941c308c-a261-433c-9b36-7b25b426576c" >
+		<ee:transform doc:name="json payload" doc:id="4efd1bc4-b033-4667-b01f-84886be0a2c9" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<http:request method="POST" doc:name="calling customerRegistration papi" doc:id="2f5d7ec2-4f86-4174-84f1-d2f0e1848f0b" path="/customerRegistration" responseTimeout="1600000" config-ref="HTTP_Request_configuration">
+			<http:headers ><![CDATA[#[correlationId: vars.correlationId]]]></http:headers>
+		</http:request>
+		<ee:transform doc:name="logger inputPayload" doc:id="f866ece9-1b3b-4acf-bbd8-84f08baca28f" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable resource="dwl-files/loggerResp.dwl" variableName="inputPayload" />
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="mile-log:success-response-received" doc:id="daea2d1a-5d1a-47a5-be60-4cfdadc0e110" name="mile-log:success-response-received"/>
+	</flow>
+	<flow name="orderPlacing" doc:id="17cf7622-8b91-4496-a1e5-3055a11555e4" >
+		<ee:transform doc:name="json payload" doc:id="fdefdb63-539d-47dd-8280-eae7d8cc67b0" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<http:request method="POST" doc:name="calling placingOrder papi" doc:id="ebe8a43b-f5ed-4607-ab96-d3f7ccb1cc2e" config-ref="HTTP_Request_configuration" path="/placingOrder" responseTimeout="1800000">
+			<http:headers ><![CDATA[#[correlationId: vars.correlationId]]]></http:headers>
+		</http:request>
+		<ee:transform doc:name="logger inputPayload" doc:id="20f6c147-c021-4d76-b535-f173f8f72ad7" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable resource="dwl-files/loggerResp.dwl" variableName="inputPayload" />
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="mile-log:success-response-received" doc:id="cda26e0e-50df-4d26-8d6b-431a9db8aa1d" name="mile-log:success-response-received"/>
+	</flow>
+</mule>

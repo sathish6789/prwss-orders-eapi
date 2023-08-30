@@ -1,0 +1,9 @@
+%dw 2.0
+
+type auto_a4632b9e_f1a7_4bf7_a7d6_ca88d82cb2cc_Output_Payload = {
+  apiName: String, 
+  status: "up" | "down", 
+  dependencies?: Array<{    name: String,     status: "up" | "down" | "unknown",     _?: Any  }> {"description": "The status of all the dependencies"}, 
+  _?: Any
+}
+

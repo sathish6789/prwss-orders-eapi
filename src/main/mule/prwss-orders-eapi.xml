@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+    <flow name="prwss-orders-eapi-main">
+        <http:listener config-ref="http-listener-config" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <ee:transform doc:name="set the correlationId" doc:id="363df710-9b23-4403-8ab2-0c135ad4f2bb">
+            <ee:message />
+            <ee:variables>
+                <ee:set-variable variableName="correlationId"><![CDATA[attributes.headers.correlationId default uuid()]]></ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <apikit:router config-ref="prwss-orders-eapi-config" />
+        <error-handler ref="error-handler" />
+    </flow>
+    <flow name="prwss-orders-eapi-console">
+        <http:listener config-ref="http-listener-config" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="prwss-orders-eapi-config" />
+        <error-handler ref="error-handler" />
+    </flow>
+    <flow name="post:\customerRegistration:application\json:prwss-orders-eapi-config">
+        <ee:transform doc:name="logger inputPayload" doc:id="d8afdb4c-fcbc-4695-bd8d-5495b2b2da37">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+            </ee:message>
+            <ee:variables>
+                <ee:set-variable resource="dwl-files/inputReqLogger.dwl" variableName="inputPayload" />
+            </ee:variables>
+        </ee:transform>
+        <flow-ref doc:name="mile-log:request-sent" doc:id="1bf9a5b2-da2d-4489-bfad-ca81c385f4a0" name="mile-log:request-sent" />
+        <flow-ref doc:name="calling customerRegistration flow" doc:id="ef257b7a-851f-44ac-9c58-8b470cd1a5cb" name="customerRegistration" />
+        <error-handler ref="error-handler" />
+    </flow>
+    <flow name="post:\placingOrder:application\json:prwss-orders-eapi-config">
+        <ee:transform doc:name="logger inputPayload" doc:id="9e92e0ae-39ed-4869-af00-8d4973130494">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+            </ee:message>
+            <ee:variables>
+                <ee:set-variable resource="dwl-files/inputReqLogger.dwl" variableName="inputPayload" />
+            </ee:variables>
+        </ee:transform>
+        <flow-ref doc:name="mile-log:request-sent" doc:id="3ef8b953-12c0-46af-ac29-56ce02d0471c" name="mile-log:request-sent" />
+        <flow-ref doc:name="calling orderPlacing flow" doc:id="86ad1e24-ecef-47bf-bc8f-0a4573a24858" name="orderPlacing" />
+        <error-handler ref="error-handler" />
+    </flow>
+    <flow name="get:\health:prwss-orders-eapi-config">
+        <flow-ref doc:name="Flow Reference" doc:id="2cc4618d-fc0c-415d-ae41-25fe62213a8d" name="healthcheckFlow" />
+        <error-handler ref="error-handler" />
+    </flow>
+</mule>
