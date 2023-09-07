@@ -1,10 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
-	<flow name="healthcheckFlow" doc:id="a4632b9e-f1a7-4bf7-a7d6-ca88d82cb2cc" >
-		<http:request method="GET" doc:name="Request" doc:id="1308632d-fc01-4a12-8bd2-cfe782dc211c" config-ref="HTTP_Request_configuration" path="/health"/>
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="healthcheckFlow" doc:id="74f53601-ae6d-4689-8563-f6a9ab58c636" >
+		<ee:transform doc:name="Transform Message" doc:id="ade47a9a-cf28-4f21-8e9d-5fc5fae2d714" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="inputPayload" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    correlationId : attributes.headers.correlationId,
+    businessProcessName: flow.name,
+    flowName: flow.name,  
+    source: Mule::p('application.name'),
+    target: Mule::p('application.target'),
+    httpMethod: attributes.method,
+    message: "Received the orders details from the request",
+    businessObject: payload
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="mile-log:request-received" doc:id="ed69e3ca-4d96-4c68-8145-b7822d9b6f6b" name="mile-log:request-received"/>
+		<http:request method="GET" doc:name="health-check" doc:id="fdd1d502-1140-4269-8a31-80fb106695d9" config-ref="HTTP_Request_configuration" path="/health"/>
 	</flow>
 </mule>

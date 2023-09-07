@@ -1,0 +1,8 @@
+%dw 2.0
+
+type auto_2c444d1e_ffc3_4f0a_b251_c3922acc7055_Input_Payload = {
+  orderDetails: Array<{    unitPrice: Number,     itemId: String,     itemName: String,     quantity: Number,     State: String,     ZipCode: Number,     paymentMethod: String,     Street: String,     Country: String,     City: String,     _?: Any  }>, 
+  CID: Number, 
+  _?: Any
+}
+

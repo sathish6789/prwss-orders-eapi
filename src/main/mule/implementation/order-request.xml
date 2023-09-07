@@ -1,50 +1,127 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
 	xmlns="http://www.mulesoft.org/schema/mule/core"
 	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
-http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
-	<flow name="customerRegistration" doc:id="941c308c-a261-433c-9b36-7b25b426576c" >
-		<ee:transform doc:name="json payload" doc:id="4efd1bc4-b033-4667-b01f-84886be0a2c9" >
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="customer-registration" doc:id="44147bb7-f512-46c5-bc84-1e6c0b48fb9c" >
+		<ee:transform doc:name="logger inputPayload" doc:id="9c62f108-8bcc-46c1-9903-737385200128" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 ---
 payload]]></ee:set-payload>
 			</ee:message>
-		</ee:transform>
-		<http:request method="POST" doc:name="calling customerRegistration papi" doc:id="2f5d7ec2-4f86-4174-84f1-d2f0e1848f0b" path="/customerRegistration" responseTimeout="1600000" config-ref="HTTP_Request_configuration">
-			<http:headers ><![CDATA[#[correlationId: vars.correlationId]]]></http:headers>
-		</http:request>
-		<ee:transform doc:name="logger inputPayload" doc:id="f866ece9-1b3b-4acf-bbd8-84f08baca28f" >
-			<ee:message >
-			</ee:message>
 			<ee:variables >
-				<ee:set-variable resource="dwl-files/loggerResp.dwl" variableName="inputPayload" />
+				<ee:set-variable variableName="inputPayload" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    correlationId : attributes.headers.correlationId,
+    businessProcessName: flow.name,
+    flowName: flow.name,  
+    source: Mule::p('application.name'),
+    target: Mule::p('application.target'),
+    httpMethod: attributes.method,
+    message: "Received the orders details from the request",
+    businessObject: payload
+}
+]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
-		<flow-ref doc:name="mile-log:success-response-received" doc:id="daea2d1a-5d1a-47a5-be60-4cfdadc0e110" name="mile-log:success-response-received"/>
+		<flow-ref doc:name="mile-log:request-received" doc:id="428b84d8-229c-4e2c-9c50-0df6460c7f5d" name="mile-log:request-received"/>
+		<http:request method="POST" doc:name="calling customer-registration papi" doc:id="f79cd3c7-91f1-4ace-9a9e-dd05bb49d5a3" path="${customerRequest.path}" config-ref="HTTP_Request_configuration">
+			<http:headers ><![CDATA[#[{
+	correlationId: attributes.headers.correlationId,
+	client_id: Mule::p('anypoint.clientid'),
+	client_secret: Mule::p('anypoint.clientsecret')
+}]]]></http:headers>
+		</http:request>
+		<ee:transform doc:name="logger inputPayload" doc:id="033eeea9-710c-455c-bfe8-f16574c3d35b" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="inputPayload" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    correlationId : attributes.headers.correlationId,
+    businessProcessName: flow.name,
+    flowName: flow.name,  
+    source: Mule::p('application.name'),
+    target: Mule::p('application.target'),
+    httpMethod: attributes.method,
+    message: "Received the success response from the prwss-orders-papi",
+    businessObject: payload
+}
+]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="mile-log:success-response-received" doc:id="7493c05d-a963-4f35-8373-733833217b67" name="mile-log:success-response-received"/>
 	</flow>
-	<flow name="orderPlacing" doc:id="17cf7622-8b91-4496-a1e5-3055a11555e4" >
-		<ee:transform doc:name="json payload" doc:id="fdefdb63-539d-47dd-8280-eae7d8cc67b0" >
+	<flow name="order-placing" doc:id="2c444d1e-ffc3-4f0a-b251-c3922acc7055" >
+		<ee:transform doc:name="logger inputPayload" doc:id="ec5b8d43-3ea1-45f9-9f91-e333a11f292b" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 ---
-payload]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
-		<http:request method="POST" doc:name="calling placingOrder papi" doc:id="ebe8a43b-f5ed-4607-ab96-d3f7ccb1cc2e" config-ref="HTTP_Request_configuration" path="/placingOrder" responseTimeout="1800000">
-			<http:headers ><![CDATA[#[correlationId: vars.correlationId]]]></http:headers>
-		</http:request>
-		<ee:transform doc:name="logger inputPayload" doc:id="20f6c147-c021-4d76-b535-f173f8f72ad7" >
-			<ee:message >
+payload
+]]></ee:set-payload>
 			</ee:message>
 			<ee:variables >
-				<ee:set-variable resource="dwl-files/loggerResp.dwl" variableName="inputPayload" />
+				<ee:set-variable variableName="inputPayload" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    correlationId : attributes.headers.correlationId,
+    businessProcessName: flow.name,
+    flowName: flow.name,  
+    source: Mule::p('application.name'),
+    target: Mule::p('application.target'),
+    httpMethod: attributes.method,
+    message: "Received the orders details from the request",
+    businessObject: payload
+}]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
-		<flow-ref doc:name="mile-log:success-response-received" doc:id="cda26e0e-50df-4d26-8d6b-431a9db8aa1d" name="mile-log:success-response-received"/>
+		<flow-ref doc:name="mile-log:request-received" doc:id="58bc573f-8221-42f4-9478-2af6b31d111f" name="mile-log:request-received"/>
+		<http:request method="POST" doc:name="calling placing-order papi" doc:id="597a402f-3100-4098-b828-b0278b39fa24" config-ref="HTTP_Request_configuration" path="${orders.path}">
+			<http:headers ><![CDATA[#[{
+	correlationId: attributes.headers.correlationId,
+	client_id: Mule::p('anypoint.clientid'),
+	client_secret: Mule::p('anypoint.clientsecret')
+}]]]></http:headers>
+		</http:request>
+		<ee:transform doc:name="logger inputPayload" doc:id="b45d7c0a-6522-4e31-861c-9ae2cd7953da" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload
+]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="inputPayload" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    correlationId : attributes.headers.correlationId,
+    businessProcessName: flow.name,
+    flowName: flow.name,  
+    source: Mule::p('application.name'),
+    target: Mule::p('application.target'),
+    httpMethod: attributes.method,
+    message: "Received the success response from the prwss-orders-papi",
+    businessObject: payload
+}
+]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="mile-log:success-response-received" doc:id="649f6d5a-bb01-4c23-a9e5-3a4606bb6ef0" name="mile-log:success-response-received"/>
 	</flow>
 </mule>

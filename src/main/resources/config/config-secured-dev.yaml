@@ -1,11 +1,6 @@
-# Use this file for encrypted user/password information.
-# Unencrypted values may be used in this file using standard yaml syntax
-# Encrypted values must be enclosed in ![] within the quotes.
-
-#TLS context configuration
 tls:
-  keypwd: "![UwxsoiAsdfctK2RWiyXgQ==]"
-  pwd: "![UwxsoiAsdfctK2RWiyXgQ==]"
+  pssword: "![zkbX9B/Wjv2zopfd5KbJyw==]"
   
-backendBearerToken:
-  clientSecret: "![a0juUHzIqxQasdfpoinuy/TasdLoasdf8kjKjuBliEdxopfR3aPiNjKaWsdB]"
+anypoint:
+  clientid: "![SoKIrSPSIjUKghnY77MjAugiKgTWrZMRoKJiOtXvb49sxRN6Td3VhA==]"
+  clientsecret: "![hvJGV4dfRyTZLJ83hB8qR5NIw0NH8LFWB1DYdri9MqM0Y7vtbfldZw==]"

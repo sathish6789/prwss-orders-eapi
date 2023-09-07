@@ -2,8 +2,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>a0497864-b605-4feb-b01c-b1711dd8c3d5</groupId>
-	<artifactId>prowess-app</artifactId>
+	<groupId>a0497864-b605-4feb-b01c-b1711dd8c3d8</groupId>
+	<artifactId>prwss-orders-eapi</artifactId>
 	<version>1.0.2</version>
 	<packaging>mule-application</packaging>
 
@@ -15,7 +15,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
 		<app.runtime>4.4.0</app.runtime>
-		<mule.maven.plugin.version>3.8.0</mule.maven.plugin.version>
+		<mule.maven.plugin.version>3.8.2</mule.maven.plugin.version>
 		<munit.version>2.3.9</munit.version>
 		<tags/>
 		<categories>[]</categories>
@@ -93,17 +93,11 @@
 			<classifier>mule-plugin</classifier>
 		</dependency>
 		<dependency>
-			<groupId>com.mulesoft.connectors</groupId>
-			<artifactId>mule-salesforce-connector</artifactId>
-			<version>10.13.1</version>
+			<groupId>781344dd-5c35-44e2-a7d5-54084ffee180</groupId>
+			<artifactId>mule-common-libraries</artifactId>
+			<version>1.0.1</version>
 			<classifier>mule-plugin</classifier>
 		</dependency>
-		<dependency>
-            <groupId>781344dd-5c35-44e2-a7d5-54084ffee180</groupId>
-            <artifactId>mule-common-libraries</artifactId>
-            <version>1.0.1</version>
-            <classifier>mule-plugin</classifier>
-        </dependency>
 		<dependency>
 			<groupId>com.mulesoft.modules</groupId>
 			<artifactId>mule-secure-configuration-property-module</artifactId>
@@ -115,6 +109,26 @@
 			<artifactId>mule-apikit-module</artifactId>
 			<version>1.5.8</version>
 			<classifier>mule-plugin</classifier>
+		</dependency>
+		<dependency>
+			<groupId>com.mulesoft.munit</groupId>
+			<artifactId>munit-runner</artifactId>
+			<version>2.3.14</version>
+			<classifier>mule-plugin</classifier>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.mulesoft.munit</groupId>
+			<artifactId>munit-tools</artifactId>
+			<version>2.3.14</version>
+			<classifier>mule-plugin</classifier>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mule.weave</groupId>
+			<artifactId>assertions</artifactId>
+			<version>1.0.2</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 

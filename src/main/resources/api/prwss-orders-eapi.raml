@@ -15,7 +15,7 @@ traits:
 /health:
   type: healthCheck
 
-/customerRegistration:
+/customer-registration:
   displayName: customer registration
   description: register the new customers to place new orders and also checks customer already registered or not
   is:
@@ -33,7 +33,7 @@ traits:
           application/json:
             example:
               message: !include examples/succCustomerExp.json
-/placingOrder:
+/placing-order:
   displayName: placing the orders
   description: customer placing the orders different items
   is:
