@@ -20,6 +20,8 @@ request:
   host: "prwss-orders-papi.us-e2.cloudhub.io"
   port: "443"
   
+health:
+  path: "/health"
 tls:
   type: "JKS"
   path: "KeyStore.jks"
